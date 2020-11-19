@@ -29,16 +29,16 @@ def getReview(request, index1, index2):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM public.review WHERE game_id = %s AND id = %s", [index1, index2])
         row = universal.dictfetchall(cursor)
-    result = row 
-    return HttpResponse (result, status = statusCode)
+    result = universal.dumpJson(row)  
+    return HttpResponse (result, status = statusCode, content_type = "application/json")
 
 def getList(request, index1):
     statusCode = 200
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM public.review WHERE game_id = %s", [index1])
         row = universal.dictfetchall(cursor)
-    result = row 
-    return HttpResponse (result, status = statusCode)
+    result = universal.dumpJson(row)   
+    return HttpResponse (result, status = statusCode, content_type = "application/json")
 
 def create(request, index1):
     input = universal.getText(request.body)

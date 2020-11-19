@@ -29,16 +29,16 @@ def getUser(request, index1):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM public.user WHERE id = %s", [index1])
         row = universal.dictfetchall(cursor)
-    result = row
-    return HttpResponse (result, status = statusCode)
+    result = universal.dumpJson(row)      
+    return HttpResponse (result, status = statusCode, content_type = "application/json")
 
 def getList(request):
     statusCode = 200
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM public.user")
         row = universal.dictfetchall(cursor)
-    result = row
-    return HttpResponse (result, status = statusCode)
+    result = universal.dumpJson(row)  
+    return HttpResponse (result, status = statusCode, content_type = "application/json")
 
 def create(request):
     input = universal.getText(request.body)

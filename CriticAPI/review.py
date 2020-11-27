@@ -26,47 +26,114 @@ def API2(request, index1, index2):
 
 def getReview(request, index1, index2):
     statusCode = 200
+    result = "bad"
+    content_type = None
+
+    if "Authorization" in request.headers:
+        auth = universal.decode_token(request.headers["Authorization"])
+        if auth[0] == False:
+            return HttpResponse (result, content_type, 401)
+    else:
+        return HttpResponse (result, content_type, 401)
+
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM public.review WHERE game_id = %s AND id = %s", [index1, index2])
+        cursor.execute("SELECT * FROM public.review WHERE id = %s", [index1])
         row = universal.dictfetchall(cursor)
-    result = universal.dumpJson(row)  
+    result = universal.dumpJson(row)      
     return HttpResponse (result, status = statusCode, content_type = "application/json")
 
 def getList(request, index1):
     statusCode = 200
+    result = "bad"
+    content_type = None
+
+    if "Authorization" in request.headers:
+        auth = universal.decode_token(request.headers["Authorization"])
+        if auth[0] == False:
+            return HttpResponse (result, content_type, 401)
+    else:
+        return HttpResponse (result, content_type, 401)
+
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM public.review WHERE game_id = %s", [index1])
+        cursor.execute("SELECT * FROM public.review")
         row = universal.dictfetchall(cursor)
-    result = universal.dumpJson(row)   
+    result = universal.dumpJson(row)  
     return HttpResponse (result, status = statusCode, content_type = "application/json")
 
 def create(request, index1):
+    statusCode = 200
+    result = "bad"
+    content_type = None
+
+    if "Authorization" in request.headers:
+        auth = universal.decode_token(request.headers["Authorization"])
+        if auth[0] == False:
+            return HttpResponse (result, content_type, 401)
+    else:
+        return HttpResponse (result, content_type, 401)  
+
     input = universal.getText(request.body)
-    if input == False:
+    body = input[1]
+    if input[0] == False:
         return HttpResponse ("ErrorA", status = 400)
-    if "content" not in input:
-        return HttpResponse ("ErrorB", status = 400)  
-    statusCode = 201
+    if "content" not in body:
+        return HttpResponse ("ErrorB", status = 400)
+             
+    statusCode = 201  
     with connection.cursor() as cursor:
-        cursor.execute("INSERT INTO public.review(game_id, user_id, content) VALUES (%s, %s, %s) RETURNING id, content", [index1, input["user_id"], input["content"]])
+        cursor.execute("INSERT INTO public.review(game_id,user_id,content) VALUES (%s,%s,%s) RETURNING id, content", [index1, body["user_id"], body["content"]])
         returnedId = universal.dictfetchall(cursor)
     result = universal.dumpJson(returnedId)
     return HttpResponse (result, status = statusCode, content_type = "application/json")
 
 def update(request, index1, index2):
-    input = universal.getText(request.body)
-    if input == False:
-        return HttpResponse ("Error", status = 400)
-    if "content" not in input:
-        return HttpResponse ("Error", status = 400)      
     statusCode = 200
+    result = "bad"
+    content_type = None
+
+    if "Authorization" in request.headers:
+        auth = universal.decode_token(request.headers["Authorization"])
+        if auth[0] == False:
+            return HttpResponse (result, content_type, 401)
+    else:
+        return HttpResponse (result, content_type, 401)   
+
+    input = universal.getText(request.body)
+    body = input[1]
+    if input == False:
+        return HttpResponse ("ErrorA", status = 400)
+    if "content" not in body:
+        return HttpResponse ("ErrorB", status = 400)      
+    statusCode = 200
+    result = "bad"
+    content_type = None
+
+    if "Authorization" in request.headers:
+        auth = universal.decode_token(request.headers["Authorization"])
+        if auth[0] == False:
+            return HttpResponse (result, content_type, 401)
+    else:
+        return HttpResponse (result, content_type, 401)
+
     with connection.cursor() as cursor:
-        cursor.execute("UPDATE public.review SET content = %s WHERE id = %s", [input["content"], index2])
-    result = "Zaidimas atnaujintas"
+        cursor.execute("UPDATE public.review SET content = %s WHERE id = %s", [body["content"], index2])
+    result = "Apzvalga atnaujinta"
     return HttpResponse(result, status = statusCode)
 
 def delete(request, index1, index2):
     statusCode = 200
+    result = "bad"
+    content_type = None
+
+    if "Authorization" in request.headers:
+        auth = universal.decode_token(request.headers["Authorization"])
+        if auth[0] == False:
+            result = "Unauthorized"
+            return HttpResponse (result, content_type, 401)
+    else:
+        result = "No token"
+        return HttpResponse (result, content_type, 401)           
+
     with connection.cursor() as cursor:
         cursor.execute("DELETE FROM public.review WHERE id = %s", [index2])        
     return HttpResponse(status = statusCode)

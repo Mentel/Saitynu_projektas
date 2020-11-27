@@ -5,6 +5,7 @@ from . import game, review, category, user
 urlpatterns = [
     path('user/', user.API1, name='userFirst'),
     path('user/<int:index1>', user.API2, name='userSecond'),
+    path('user/login', user.API3, name='userThird'),   
     path('category/', category.API1, name='categoryFirst'),
     path('category/<int:index1>', category.API2, name='categorySecond'),
     path('category/<int:index1>/game/', game.API1, name='gameFirst'),

@@ -1,5 +1,8 @@
 from django.http import QueryDict
 import simplejson as json
+import jwt
+from django.conf import settings
+
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
@@ -27,8 +30,37 @@ def getText(incomingData):
         bab = x
     bab = loadJson(bab)
     if bab == "empty":
-        return False
-    if bab == None or not isinstance(bab,dict):
-        return False
+        return [False, ""]
+    elif bab == None or not isinstance(bab,dict):
+        return [False, bab]
     else:
-        return bab
+        return [True, bab]
+
+def decode_token(auth):
+    success = True
+    result = ""
+    token = auth.split()
+    if len(token) == 2:
+        if token[0] == "Bearer":
+            try:
+                result = jwt.decode(token[1], settings.SECRET_KEY, algorithms='HS256')
+                result["scope"] = result["scope"].split()
+            except jwt.exceptions.DecodeError:
+                success = False
+                result = "wrong_input"
+            except jwt.ExpiredSignatureError:
+                success = False
+                result = "expired"
+    else:
+        success = False
+        result = "wrong_input"
+    return [success, result]
+
+def getRedirect_uri():
+    return "https://gamecritic.azurewebsites.net/"
+
+def get_admin_scopes():
+    return ["2"]
+
+def get_user_scopes():
+    return ["1"]

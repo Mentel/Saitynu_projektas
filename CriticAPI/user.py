@@ -168,6 +168,10 @@ def delete(request, index1):
         row = universal.dictfetchall(cursor)
         if len(row) >= 1:
             return HttpResponse("Sis vartotojas turi apzvalgu.", status = 409)
+        cursor.execute("SELEcT * FROM public.user WHERE id = %s", [index1])
+        row = universal.dictfetchall(cursor)
+        if len(row) == 0:
+            return HttpResponse("Vartotjas neegzistuoja.", status = 410)
         cursor.execute("DELETE FROM public.user WHERE id = %s", [index1])        
     return HttpResponse(status = statusCode)
 

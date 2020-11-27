@@ -135,5 +135,9 @@ def delete(request, index1, index2):
         return HttpResponse (result, content_type, 401)           
 
     with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM public.game WHERE id = %s", [index1])
+        row = universal.dictfetchall(cursor)
+        if len(row) == 0:
+            return HttpResponse("Si apzvalga neegzistuoja.", status = 410)
         cursor.execute("DELETE FROM public.review WHERE id = %s", [index2])        
     return HttpResponse(status = statusCode)

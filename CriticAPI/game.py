@@ -173,5 +173,9 @@ def delete(request, index1):
         row = universal.dictfetchall(cursor)
         if len(row) >= 1:
             return HttpResponse("Sis zaidimas turi apzvalgu.", status = 409)
+        cursor.execute("SELECT * FROM public.game WHERE id = %s", [index1])
+        row = universal.dictfetchall(cursor)
+        if len(row) == 0:
+            return HttpResponse("Sis zaidimas neegzistuoja.", status = 410)
         cursor.execute("DELETE FROM public.game WHERE id = %s", [index1])        
     return HttpResponse(status = statusCode)    

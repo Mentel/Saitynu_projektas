@@ -78,7 +78,7 @@ def create(request):
         return HttpResponse ("ErrorA", status = 400)
     if "name" not in body:
         return HttpResponse ("ErrorB", status = 400)
-        
+
     scope = request.headers["scope"]
     scope = int(scope)
     if scope != 2:
@@ -148,5 +148,9 @@ def delete(request, index1):
         row = universal.dictfetchall(cursor)
         if len(row) >= 1:
             return HttpResponse("Si kategorija turi zaidimu.", status = 409)
+        cursor.execute("SELECT * FROM public.category WHERE id = %s", [index1])
+        row = universal.dictfetchall(cursor)
+        if len(row) == 0:
+            return HttpResponse("Si kategorija neegzistuoja.", status = 410)            
         cursor.execute("DELETE FROM public.category WHERE id = %s", [index1])        
     return HttpResponse(status = statusCode)
